@@ -1,0 +1,23 @@
+{
+  "name": "play",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-runtime": "^6.26.0",
+    "babelify": "^8.0.0",
+    "browserify": "^16.2.2",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-hyperscript": "^3.2.0",
+    "sead": "^1.0.0"
+  },
+  "scripts": {
+    "build": "browserify index.js -o bundle.js -t [ babelify ]"
+  }
+}
