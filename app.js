@@ -66,6 +66,10 @@ class FetchLoader extends Component {
   }
 }
 
+/*
+ * USAGE
+ */
+
 function* fetchMovies(props) {
   console.log(props);
   const resp = yield call(window.fetch, 'http://httpbin.org/get');
