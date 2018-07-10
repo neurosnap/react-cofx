@@ -875,6 +875,10 @@ core-util-is@~1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
 
+cosed@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/cosed/-/cosed-1.1.0.tgz#a1fff3766bb5d548b67b757daba3675070c043d2"
+
 create-ecdh@^4.0.0:
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/create-ecdh/-/create-ecdh-4.0.3.tgz#c9111b6f33045c4697f144787f9254cdc77c45ff"
@@ -1560,10 +1564,6 @@ safe-buffer@^5.0.1, safe-buffer@^5.1.0, safe-buffer@^5.1.1, safe-buffer@~5.1.0, 
 "safer-buffer@>= 2.1.2 < 3":
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
-
-sead@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/sead/-/sead-1.0.0.tgz#827cacf8f407f2dc0915114aa7b4cc5fde50f33e"
 
 semver@^5.3.0:
   version "5.5.0"

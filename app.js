@@ -1,7 +1,7 @@
 const { Component, Children, cloneElement } = require('react');
 const { render } = require('react-dom');
 const h = require('react-hyperscript');
-const { call, task } = require('sead');
+const { call, task } = require('cosed');
 
 const defaultMapStateToProps = (data) => ({ data });
 const defaultMapRefetchToProps = (refetch) => ({});

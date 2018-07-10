@@ -13,10 +13,10 @@
     "babel-runtime": "^6.26.0",
     "babelify": "^8.0.0",
     "browserify": "^16.2.2",
+    "cosed": "^1.1.0",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
-    "react-hyperscript": "^3.2.0",
-    "sead": "^1.0.0"
+    "react-hyperscript": "^3.2.0"
   },
   "scripts": {
     "build": "browserify index.js -o bundle.js -t [ babelify ]"
