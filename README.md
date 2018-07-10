@@ -26,7 +26,7 @@ to keep things easy to test and migrate to a redux container component.
 * Connects a component to an async function
 * Caches response of async function
 * Async function has access to component's props
-* Component has ability to refetch data with `refetch` prop
+* Component has ability to refetch data
 * Same structure as connecting a component to redux for easy migration
 * Async function can be anything that [co](https://github.com/tj/co) can convert to a promise
 
@@ -63,7 +63,7 @@ const App = () => (
 );
 ```
 
-Want to refetch data?  Each connected component has access to a prop, `refetch`
+Want to refetch data? Like `mapDispatchToProps` in redux, we have `mapRefetchToProps`
 which will bust the cache and call the request again.
 
 ```js
@@ -73,6 +73,14 @@ const DisplayMovies = ({ movies = [], refetch }) => {
     h('div', movies.map((movie) => h('div', { key: movie }, movie))),
   ]);
 };
+
+const movieFetcher = createFetcher(fetchMovies);
+const mapStateToProps = (movies) => ({ movies });
+const mapRefetchToProps = (refetch) => ({ refetch });
+const DisplayMoviesContainer = movieFetcher(
+  mapStateToProps,
+  mapRefetchToProps,
+)(DisplayMovies);
 ```
 
 Async function also receives props sent to component

@@ -4,6 +4,7 @@ const h = require('react-hyperscript');
 const { call, task } = require('sead');
 
 const defaultMapStateToProps = (data) => ({ data });
+const defaultMapRefetchToProps = (refetch) => ({});
 
 function createFetcher(fn) {
   let cache = undefined;
@@ -23,15 +24,15 @@ function createFetcher(fn) {
     cache = undefined;
   };
 
-  return (stateFn = defaultMapStateToProps) => {
+  return (mapStateToProps = defaultMapStateToProps, mapRefetchToProps) => {
     const WrapComponent = ({ component, children, ...props }) => {
       const data = read(props);
-      const compProps = stateFn(data);
+      const compProps = mapStateToProps(data);
       return h(component, { children, ...props, ...compProps });
     };
 
     return (component, loader) => {
-      return (props) => h(FetchLoader, { loader, bust }, [
+      return (props) => h(FetchLoader, { loader, bust, mapRefetchToProps }, [
         h(WrapComponent, { ...props, component }),
       ]);
     };
@@ -46,6 +47,7 @@ class FetchLoader extends Component {
   static defaultProps = {
     loader: null,
     bust: () => {},
+    mapRefetchToProps: defaultMapRefetchToProps,
   }
 
   componentDidCatch(error) {
@@ -73,7 +75,8 @@ class FetchLoader extends Component {
       return loader;
     };
 
-    const mapChild = (child) => cloneElement(child, { refetch: this.refetch });
+    const compProps = mapRefetchToProps(this.refetch);
+    const mapChild = (child) => cloneElement(child, { ...compProps });
     return h('div', Children.map(children, mapChild));
   }
 }
@@ -98,7 +101,8 @@ const Example = ({ movies = [], refetch }) => {
 
 const movieFetcher = createFetcher(fetchMovies);
 const mapStateToProps = (movies) => ({ movies });
-const ExampleConn = movieFetcher(mapStateToProps)(Example);
+const mapRefetchToProps = (refetch) => ({ refetch });
+const ExampleConn = movieFetcher(mapStateToProps, mapRefetchToProps)(Example);
 const App = () => h('div', [
   h(ExampleConn),
 ]);
