@@ -15,7 +15,8 @@ function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in ob
 
 var _require = require('react'),
     Component = _require.Component,
-    Children = _require.Children;
+    Children = _require.Children,
+    cloneElement = _require.cloneElement;
 
 var _require2 = require('react-dom'),
     render = _require2.render;
@@ -50,6 +51,11 @@ function createFetcher(fn) {
     });
   };
 
+  var bust = function bust() {
+    console.log('CACHE BUSTED');
+    cache = undefined;
+  };
+
   return function () {
     var stateFn = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultMapStateToProps;
 
@@ -65,7 +71,7 @@ function createFetcher(fn) {
 
     return function (component, loader) {
       return function (props) {
-        return h(FetchLoader, { loader: loader }, [h(WrapComponent, _extends({}, props, { component: component }))]);
+        return h(FetchLoader, { loader: loader, bust: bust }, [h(WrapComponent, _extends({}, props, { component: component }))]);
       };
     };
   };
@@ -87,6 +93,9 @@ var FetchLoader = function (_Component) {
 
     return _ret = (_temp = (_this2 = _possibleConstructorReturn(this, (_ref2 = FetchLoader.__proto__ || Object.getPrototypeOf(FetchLoader)).call.apply(_ref2, [this].concat(args))), _this2), _this2.state = {
       isLoading: false
+    }, _this2.refetch = function () {
+      _this2.props.bust();
+      _this2.setState({ isLoading: false });
     }, _temp), _possibleConstructorReturn(_this2, _ret);
   }
 
@@ -108,6 +117,8 @@ var FetchLoader = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
+      var _this4 = this;
+
       var _props = this.props,
           children = _props.children,
           loader = _props.loader;
@@ -118,29 +129,33 @@ var FetchLoader = function (_Component) {
         return loader;
       };
 
-      return h('div', Children.map(children, function (child) {
-        return child;
-      }));
+      var mapChild = function mapChild(child) {
+        return cloneElement(child, { refetch: _this4.refetch });
+      };
+      return h('div', Children.map(children, mapChild));
     }
   }]);
 
   return FetchLoader;
 }(Component);
 
+/*
+ * USAGE
+ */
+
 FetchLoader.defaultProps = {
-  loader: null
+  loader: null,
+  bust: function bust() {}
 };
-
-
 function fetchMovies(props) {
-  var resp, json;
+  var resp, json, movies;
   return regeneratorRuntime.wrap(function fetchMovies$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
           console.log(props);
           _context.next = 3;
-          return call(window.fetch, 'http://httpbin.org/get');
+          return call(window.fetch, 'https://endpoints.uncaughtexception.wtf/9b45d01b5c3447539b0bfca393b3305d');
 
         case 3:
           resp = _context.sent;
@@ -149,9 +164,8 @@ function fetchMovies(props) {
 
         case 6:
           json = _context.sent;
-
-          console.log(json);
-          return _context.abrupt('return', ["one", "two", "three"]);
+          movies = json.movies;
+          return _context.abrupt('return', movies);
 
         case 9:
         case 'end':
@@ -160,22 +174,25 @@ function fetchMovies(props) {
     }
   }, _marked, this);
 }
-var Example = function Example() {
-  var _ref3 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-      _ref3$movies = _ref3.movies,
-      movies = _ref3$movies === undefined ? [] : _ref3$movies;
+var Example = function Example(_ref3) {
+  var _ref3$movies = _ref3.movies,
+      movies = _ref3$movies === undefined ? [] : _ref3$movies,
+      refetch = _ref3.refetch;
 
-  return h('div', movies.map(function (movie) {
+  return h('div', [h('a', { href: '#', onClick: function onClick() {
+      refetch();
+    } }, 'refetch'), h('div', movies.map(function (movie) {
     return h('div', { key: movie }, movie);
-  }));
+  }))]);
 };
+
 var movieFetcher = createFetcher(fetchMovies);
 var mapStateToProps = function mapStateToProps(movies) {
   return { movies: movies };
 };
 var ExampleConn = movieFetcher(mapStateToProps)(Example);
 var App = function App() {
-  return h('div', [h(ExampleConn)]);
+  return h('div', [h(ExampleConn, { hi: 'mom' })]);
 };
 
 var r = function r() {
