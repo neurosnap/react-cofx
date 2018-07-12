@@ -132,7 +132,10 @@ const DisplayMovies = ({ movies = [], error }) => {
 };
 
 const movieFetcher = createFetcher(fetchMovies);
-const mapStateToProps = (movies, error) => ({ movies, error });
+const mapStateToProps = (movies, error) => ({ 
+  movies: movies || [],
+  error,
+});
 const DisplayMoviesContainer = movieFetcher(mapStateToProps)(DisplayMovies);
 
 const App = () => (
