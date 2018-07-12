@@ -2,4 +2,6 @@ node_modules/
 *.swp
 *.log
 .DS_Store
-bundle.js
+demo/bundle.js
+react-fetcher.js
+dist/
