@@ -1034,9 +1034,9 @@ core-util-is@~1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
 
-cosed@^1.1.3:
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/cosed/-/cosed-1.1.3.tgz#e42e2e726ad64aa3166cac68e64214131fe4805e"
+cosed@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/cosed/-/cosed-1.1.5.tgz#d5738853d80a105255900d03d48593ca2a3a3078"
 
 create-ecdh@^4.0.0:
   version "4.0.3"

@@ -5,7 +5,7 @@ type Refetch = () => void;
 type FetchFn = () => IterableIterator<any>;
 export type MapStateToProps = (data: any, error: any) => { [key: string]: any };
 export type MapRefetchToProps = (refetch: Refetch) => { [key: string]: any };
-type ReactFn = () => React.ReactElement<any>;
+type ReactFn = (...args: any[]) => React.ReactElement<any>;
 interface CancellablePromise {
   promise: Promise<any>;
   cancel: () => void;
