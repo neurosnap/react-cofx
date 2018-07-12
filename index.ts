@@ -1,53 +1,82 @@
-import { Component, createElement } from 'react';
-import { task } from 'cosed';
+import * as React from 'react';
+import { task, TaskFn } from 'cosed';
 
 type Refetch = () => void;
-type FetchFn = Function | Generator;
-type MapStateToProps = (data: any) => { [key: string]: any };
-type MapRefetchToProps = (refetch: Refetch) => { [key: string]: any };
+type FetchFn = Iterator<any>;
+export type MapStateToProps = (data: any, error: any) => { [key: string]: any };
+export type MapRefetchToProps = (refetch: Refetch) => { [key: string]: any };
 type ReactFn = () => React.ReactElement<any>;
-const defaultMapStateToProps = (data: any) => ({ data });
+interface CancellablePromise {
+  promise: Promise<any>;
+  cancel: () => void;
+}
+const defaultMapStateToProps = (data: any, error: any) => ({ data, error });
 const defaultMapRefetchToProps = () => ({});
 
-function createFetcher(fn: FetchFn) {
+export default function createFetcher(fn: FetchFn, taskRunner: TaskFn = task) {
   return (mapStateToProps: MapStateToProps, mapRefetchToProps: MapRefetchToProps) => {
     return (component: ReactFn, loader: ReactFn) => {
-      return (props: { [key: string]: any }) => createElement(FetchLoader, {
+      return (props: { [key: string]: any }) => React.createElement(FetchLoader, {
         loader,
         mapStateToProps,
         mapRefetchToProps,
-        fetch: () => task(fn, props),
+        fetch: () => makeCancelable(taskRunner(fn, props)),
         component,
       }, null);
     };
   };
 }
 
+const makeCancelable = (promise: Promise<any>): CancellablePromise => {
+  let hasCanceled_ = false;
+
+  const wrappedPromise = new Promise((resolve, reject) => {
+    promise.then(
+      (val) => hasCanceled_ ? reject({ isCanceled: true }) : resolve(val),
+      (error) => hasCanceled_ ? reject({ isCanceled: true }) : reject(error)
+    );
+  });
+
+  return {
+    promise: wrappedPromise,
+    cancel() {
+      hasCanceled_ = true;
+    },
+  };
+};
+
 interface IProps {
   loader: ReactFn;
   mapStateToProps: MapStateToProps;
   mapRefetchToProps: MapRefetchToProps;
-  fetch: () => Promise<any>;
+  fetch: () => CancellablePromise;
   component: ReactFn;
 }
 
 interface IState {
   isLoading: boolean;
   data: any;
+  error: any;
 }
 
-class FetchLoader extends Component<IProps, IState> {
+class FetchLoader extends React.Component<IProps, IState> {
+  fetcher: CancellablePromise = {
+    promise: Promise.resolve(),
+    cancel: () => {},
+  };
+
   state: IState = {
     isLoading: false,
     data: undefined,
+    error: undefined,
   }
 
   static defaultProps: IProps = {
     loader: null,
+    component: null,
     mapStateToProps: defaultMapStateToProps,
     mapRefetchToProps: defaultMapRefetchToProps,
-    fetch: () => Promise.resolve(),
-    component: null,
+    fetch: () => makeCancelable(Promise.resolve()),
   }
 
   componentDidMount() {
@@ -58,39 +87,53 @@ class FetchLoader extends Component<IProps, IState> {
     this.fetch();
   }
 
+  componentWillUnmount() {
+    this.fetcher.cancel();
+  }
+
   fetch = () => {
-    const shouldFetch = !this.state.isLoading && !this.state.data;
-    if (shouldFetch) {
-      console.log('FETCHING');
-      this.setState(() => ({ isLoading: true }));
-      this.props.fetch().then((data: any) => {
-        this.setState(() => ({ data, isLoading: false }));
-      });
-    } else {
-      console.log('NOT FETCHING');
+    const { isLoading, data } = this.state;
+    const fetchFn = this.props.fetch;
+    const shouldFetch = !isLoading && typeof data === 'undefined';
+
+    if (!shouldFetch) {
+      return;
     }
+
+    this.setState(() => ({ isLoading: true }));
+
+    this.fetcher = fetchFn();
+    this.fetcher
+      .promise
+      .then((value: any) => {
+        const data = typeof value === 'undefined' ? null : value;
+        this.setState(() => ({ data, error: undefined, isLoading: false }));
+      })
+      .catch((error) => {
+        if (error.isCanceled) return;
+        this.setState(() => ({ error, data: null, isLoading: false }))
+      });
   }
 
   refetch = () => {
     this.setState(() => ({
       data: undefined,
+      error: undefined,
       isLoading: false,
     }));
   }
 
   render() {
     const { loader, component, mapStateToProps, mapRefetchToProps } = this.props;
-    const { isLoading, data } = this.state;
+    const { isLoading, data, error } = this.state;
 
     if (isLoading) {
       if (!loader) return null;
-      return createElement(loader, null, null);
+      return React.createElement(loader, null, null);
     };
 
-    const mapState = mapStateToProps(data);
+    const mapState = mapStateToProps(data, error);
     const mapRefetch = mapRefetchToProps(this.refetch);
-    return createElement(component, { ...mapState, ...mapRefetch }, null);
+    return React.createElement(component, { ...mapState, ...mapRefetch }, null);
   }
 }
-
-module.exports = createFetcher;

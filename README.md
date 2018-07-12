@@ -34,7 +34,7 @@ to keep things easy to test and migrate to a redux container component.
 
 ```js
 import createFetcher from 'react-fetcher';
-import { call } from 'co-ed';
+import { call } from 'cosed';
 
 const fetch = window.fetch;
 
@@ -102,6 +102,37 @@ const DisplayMovies = ({ movies = [] }) => (
 
 const movieFetcher = createFetcher(fetchMovies);
 const mapStateToProps = (movies) => ({ movies });
+const DisplayMoviesContainer = movieFetcher(mapStateToProps)(DisplayMovies);
+
+const App = () => (
+  <div>
+    <DisplayMoviesContainer movieName="Transporter" />
+  </div>
+);
+```
+
+Async function returns an error?  `mapStateToProps` has a second parameter for
+any error states that are returned from the async function
+
+```js
+function* fetchMovies({ movieName }) {
+  throw new Error('Something bad happened');
+}
+
+const DisplayMovies = ({ movies = [], error }) => {
+  if (error) {
+    return <div>{error.message}</div>;
+  }
+
+  return (
+    <div>
+      {movies.map((movie) => <div key={movie}>{movie}</div>)}
+    </div>
+  );
+};
+
+const movieFetcher = createFetcher(fetchMovies);
+const mapStateToProps = (movies, error) => ({ movies, error });
 const DisplayMoviesContainer = movieFetcher(mapStateToProps)(DisplayMovies);
 
 const App = () => (

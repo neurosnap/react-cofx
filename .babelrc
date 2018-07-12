@@ -1,5 +1,5 @@
 {
-  "presets": [["env", { "modules": false }], "react"],
+  "presets": [["env", { "modules": "commonjs" }], "react"],
   "plugins": [
     "transform-object-rest-spread",
     "transform-class-properties"

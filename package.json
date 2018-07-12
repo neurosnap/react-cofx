@@ -6,18 +6,20 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "build-demo": "browserify demo/index.js -o demo/bundle.js -t [ babelify ]",
+    "build-demo": "yarn build && browserify demo/index.js -o demo/bundle.js -t [ babelify ]",
     "test": "tsc --noEmit",
     "prepublish": "yarn build"
   },
   "peerDependencies": {
-    "cosed": ">=1.1.0",
     "react": ">=16.0.0"
+  },
+  "dependencies": {
+    "cosed": "^1.1.3"
   },
   "devDependencies": {
     "@types/node": "^10.5.2",
-    "@types/react-dom": "^16.0.6",
     "@types/react": "^16.4.6",
+    "@types/react-dom": "^16.0.6",
     "babel-core": "^6.26.3",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
@@ -27,6 +29,7 @@
     "babel-runtime": "^6.26.0",
     "babelify": "^8.0.0",
     "browserify": "^16.2.2",
+    "react": "^16.4.1",
     "react-dom": "^16.4.1",
     "react-hyperscript": "^3.2.0",
     "ts-node": "^7.0.0",
