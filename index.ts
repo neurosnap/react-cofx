@@ -2,7 +2,7 @@ import * as React from 'react';
 import { task, TaskFn } from 'cosed';
 
 type Refetch = () => void;
-type FetchFn = Iterator<any>;
+type FetchFn = () => IterableIterator<any>;
 export type MapStateToProps = (data: any, error: any) => { [key: string]: any };
 export type MapRefetchToProps = (refetch: Refetch) => { [key: string]: any };
 type ReactFn = () => React.ReactElement<any>;
@@ -14,8 +14,8 @@ const defaultMapStateToProps = (data: any, error: any) => ({ data, error });
 const defaultMapRefetchToProps = () => ({});
 
 export default function createFetcher(fn: FetchFn, taskRunner: TaskFn = task) {
-  return (mapStateToProps: MapStateToProps, mapRefetchToProps: MapRefetchToProps) => {
-    return (component: ReactFn, loader: ReactFn) => {
+  return (mapStateToProps?: MapStateToProps, mapRefetchToProps?: MapRefetchToProps) => {
+    return (component: ReactFn, loader?: ReactFn) => {
       return (props: { [key: string]: any }) => React.createElement(FetchLoader, {
         loader,
         mapStateToProps,

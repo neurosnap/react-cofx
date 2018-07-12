@@ -33,6 +33,10 @@ to keep things easy to test and migrate to a redux container component.
 ## Usage
 
 ```js
+yarn add @neurosnap/react-fetcher
+```
+
+```js
 import createFetcher from 'react-fetcher';
 import { call } from 'cosed';
 
@@ -132,7 +136,7 @@ const DisplayMovies = ({ movies = [], error }) => {
 };
 
 const movieFetcher = createFetcher(fetchMovies);
-const mapStateToProps = (movies, error) => ({ 
+const mapStateToProps = (movies, error) => ({
   movies: movies || [],
   error,
 });
