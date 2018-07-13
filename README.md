@@ -1,4 +1,4 @@
-# React Fetcher
+# React Fetcher [![Build Status](https://travis-ci.org/neurosnap/react-fetcher.svg?branch=master)](https://travis-ci.org/neurosnap/react-fetcher)
 
 Make async calls when rendering a component.
 

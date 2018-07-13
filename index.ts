@@ -27,7 +27,7 @@ export default function createFetcher(fn: FetchFn, taskRunner: TaskFn = task) {
   };
 }
 
-const makeCancelable = (promise: Promise<any>): CancellablePromise => {
+export const makeCancelable = (promise: Promise<any>): CancellablePromise => {
   let hasCanceled_ = false;
 
   const wrappedPromise = new Promise((resolve, reject) => {
@@ -46,9 +46,9 @@ const makeCancelable = (promise: Promise<any>): CancellablePromise => {
 };
 
 interface IProps {
-  loader: ReactFn;
-  mapStateToProps: MapStateToProps;
-  mapRefetchToProps: MapRefetchToProps;
+  loader?: ReactFn;
+  mapStateToProps?: MapStateToProps;
+  mapRefetchToProps?: MapRefetchToProps;
   fetch: () => CancellablePromise;
   component: ReactFn;
 }
@@ -59,7 +59,7 @@ interface IState {
   error: any;
 }
 
-class FetchLoader extends React.Component<IProps, IState> {
+export class FetchLoader extends React.Component<IProps, IState> {
   fetcher: CancellablePromise = {
     promise: Promise.resolve(),
     cancel: () => {},
