@@ -23,18 +23,58 @@ to keep things easy to test and migrate to a redux container component.
 
 ## Features
 
+* Separates data fetching from component
 * Connects a component to an async function
 * Caches response of async function
 * Async function has access to component's props
 * Component has ability to refetch data
-* Same structure as connecting a component to redux for easy migration
+* Same structure as connecting a component to `redux` for easy migration
 * Async function can be anything that [co](https://github.com/tj/co) can convert to a promise
+* Leverages [cosed](https://github.com/neurosnap/cosed) which handles side effects as data
+* Testing is simple and familiar if previously used `redux` and `redux-saga`
 
 ## Usage
 
 ```js
 yarn add @neurosnap/react-fetcher
 ```
+
+```js
+import createFetcher from 'react-fetcher';
+
+const fetch = window.fetch;
+
+async function fetchMovies() {
+  const resp = await fetch('http://httpbin.org/get?movies=one,two,three');
+  const json = await resp.json();
+  const movies = json.args.movies.split(',');
+
+  return movies;
+}
+
+const DisplayMovies = ({ movies = [] }) => (
+  <div>
+    {movies.map((movie) => <div key={movie}>{movie}</div>)}
+  </div>
+);
+
+const movieFetcher = createFetcher(fetchMovies);
+const mapStateToProps = (movies) => ({ movies }); // default mapStateToProps: (data, error) => ({ data, error });
+const DisplayMoviesContainer = movieFetcher(mapStateToProps)(DisplayMovies);
+
+const App = () => (
+  <div>
+    <DisplayMoviesContainer />
+  </div>
+);
+```
+
+The async function could be anything that [co](https://github.com/tj/co) supports.
+A generator, a promise, an array of promises, an object of promises, even a normal function.
+`react-fetcher` will take the result of what you pass it and send it to the component.
+
+Here at ReactFetcher, Inc. we like to use [cosed](https://github.com/neurosnap/cosed)
+which treats side effects as data with an API similar to `redux-saga`:
 
 ```js
 import createFetcher from 'react-fetcher';
@@ -49,23 +89,9 @@ function* fetchMovies() {
 
   return movies;
 }
-
-const DisplayMovies = ({ movies = [] }) => (
-  <div>
-    {movies.map((movie) => <div key={movie}>{movie}</div>)}
-  </div>
-);
-
-const movieFetcher = createFetcher(fetchMovies);
-const mapStateToProps = (movies) => ({ movies });
-const DisplayMoviesContainer = movieFetcher(mapStateToProps)(DisplayMovies);
-
-const App = () => (
-  <div>
-    <DisplayMoviesContainer />
-  </div>
-);
 ```
+
+Using cosed makes testing side effects simple.
 
 Want to refetch data? Like `mapDispatchToProps` in redux, we have `mapRefetchToProps`
 which will bust the cache and call the request again.
@@ -147,4 +173,11 @@ const App = () => (
     <DisplayMoviesContainer movieName="Transporter" />
   </div>
 );
+```
+
+Want a loader?
+
+```js
+const Loader = () => <div>LOADING!</div>;
+const DisplayMoviesContainer = movieFetcher(mapStateToProps)(DisplayMovies, Loader);
 ```
