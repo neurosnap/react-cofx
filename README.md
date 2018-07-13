@@ -16,10 +16,10 @@ to a component and some argue is an [anti-pattern](https://reactjs.org/blog/2015
 There are also cases where the component will not unmount when you expect it to
 and the async function will not be activated.
 
-This simple library attempts to create a simple API for calling an async
+This library attempts to create a simple API for calling an async
 function and returning some data to the component.  This separates data fetching
-from the actual component and uses roughly the same API that `react-redux` uses
-to keep things easy to test and migrate to a redux container component.
+from the actual component and uses roughly the same API that `react-redux` and
+`redux-saga` uses to keep things easy to test and migrate to a redux container component.
 
 ## Features
 
