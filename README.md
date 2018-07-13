@@ -52,15 +52,14 @@ async function fetchMovies() {
   return movies;
 }
 
-const DisplayMovies = ({ movies = [] }) => (
+const DisplayMovies = ({ data = [] }) => (
   <div>
-    {movies.map((movie) => <div key={movie}>{movie}</div>)}
+    {data.map((movie) => <div key={movie}>{movie}</div>)}
   </div>
 );
 
 const movieFetcher = createFetcher(fetchMovies);
-const mapStateToProps = (movies) => ({ movies }); // default mapStateToProps: (data, error) => ({ data, error });
-const DisplayMoviesContainer = movieFetcher(mapStateToProps)(DisplayMovies);
+const DisplayMoviesContainer = movieFetcher()(DisplayMovies);
 
 const App = () => (
   <div>
@@ -92,6 +91,38 @@ function* fetchMovies() {
 ```
 
 Using cosed makes testing side effects simple.
+
+Want to change the way the data gets sent to the component?  Use `mapStateToProps`
+
+```js
+import createFetcher from 'react-fetcher';
+
+const fetch = window.fetch;
+
+async function fetchMovies() {
+  const resp = await fetch('http://httpbin.org/get?movies=one,two,three');
+  const json = await resp.json();
+  const movies = json.args.movies.split(',');
+
+  return movies;
+}
+
+const DisplayMovies = ({ data = [] }) => (
+  <div>
+    {movies.map((movie) => <div key={movie}>{movie}</div>)}
+  </div>
+);
+
+const movieFetcher = createFetcher(fetchMovies);
+const mapStateToProps = (movies) => ({ movies }); // default mapStateToProps: (data, error) => ({ data, error });
+const DisplayMoviesContainer = movieFetcher(mapStateToProps)(DisplayMovies);
+
+const App = () => (
+  <div>
+    <DisplayMoviesContainer />
+  </div>
+);
+```
 
 Want to refetch data? Like `mapDispatchToProps` in redux, we have `mapRefetchToProps`
 which will bust the cache and call the request again.
