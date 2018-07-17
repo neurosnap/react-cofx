@@ -5,10 +5,12 @@ import * as Adapter from 'enzyme-adapter-react-16';
 import { FetchLoader, makeCancelable } from '.';
 
 const mount = Enzyme.mount;
+const shallow = Enzyme.shallow;
 Enzyme.configure({ adapter: new Adapter() });
 
 describe('FetchLoader', () => {
   describe('when mounting the component and waiting for promise to fulfil', () => {
+
     describe('when the promise succeeds', () => {
       it('should render the text', (done) => {
         const tree = mount(h(FetchLoader, {
@@ -27,36 +29,49 @@ describe('FetchLoader', () => {
         }, 0);
       });
 
-      it('should use mapStateToProps', (done) => {
+      it('should use mapStateToProps', () => {
         const tree = mount(h(FetchLoader, {
           component: ({ someData }: any) => h('div', someData),
           fetch: () => makeCancelable(Promise.resolve('some data')),
           mapStateToProps: (d) => ({ someData: d }),
         }));
 
-        setTimeout(() => {
-          expect(tree.text()).toEqual('some data');
-          done();
-        }, 0);
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            try {
+              expect(tree.text()).toEqual('some data');
+            } finally {
+              resolve();
+            }
+          }, 0);
+        });
       });
 
-      it('should use mapRefetchToProps', (done) => {
+      /* it('should use mapRefetchToProps', () => {
+        expect.assertions(1);
         const tree = mount(h(FetchLoader, {
           component: ({ onClick }: any) => h('div', { onClick }, 'click me'),
           fetch: () => makeCancelable(Promise.resolve('some data')),
           mapRefetchToProps: (onClick) => ({ onClick }),
         }));
 
-        setTimeout(() => {
-          tree.simulate('click');
-          expect(tree.state()).toEqual({
-            data: undefined,
-            error: undefined,
-            isLoading: true,
-          })
-          done();
-        }, 0);
-      });
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            try {
+              tree.simulate('click');
+              expect(tree.state()).toEqual({
+                data: undefined,
+                error: undefined,
+                isLoading: true,
+              });
+            } catch (err) {
+              reject(err);
+            } finally  {
+              resolve();
+            }
+          }, 0);
+        });
+      }); */
     });
 
     describe('when the promise fails', () => {
