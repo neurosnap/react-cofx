@@ -78,7 +78,7 @@ export class FetchLoader extends React.Component<IProps, IState> {
 
   state: IState = {
     isLoading: false,
-    data: undefined,
+    data: null,
     error: undefined,
     extra: undefined,
   };
@@ -107,7 +107,7 @@ export class FetchLoader extends React.Component<IProps, IState> {
   fetch = () => {
     const { isLoading, data, extra } = this.state;
     const fetchFn = this.props.fetch;
-    const shouldFetch = !isLoading && typeof data === 'undefined';
+    const shouldFetch = !isLoading && data === null;
 
     if (!shouldFetch) {
       return;
@@ -118,7 +118,7 @@ export class FetchLoader extends React.Component<IProps, IState> {
     this.fetcher = fetchFn(extra);
     this.fetcher.promise
       .then((value: any) => {
-        const data = typeof value === 'undefined' ? null : value;
+        const data = value === null ? undefined : value;
         this.setState(() => ({
           data,
           error: undefined,
