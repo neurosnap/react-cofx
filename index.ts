@@ -11,7 +11,7 @@ interface CancellablePromise {
   cancel: () => void;
 }
 const defaultMapStateToProps = (data: any, error: any) => ({ data, error });
-const defaultMapRefetchToProps = () => ({});
+const defaultMapRefetchToProps = (refetch: Refetch) => ({ refetch });
 
 export default function createFetcher(fn: FetchFn, taskRunner: TaskFn = task) {
   return (
@@ -64,10 +64,11 @@ interface IProps {
 }
 
 interface IState {
-  isLoading: boolean;
   data: any;
   error: any;
   extra: any;
+  isLoading: boolean;
+  shouldFetch: boolean;
 }
 
 export class FetchLoader extends React.Component<IProps, IState> {
@@ -77,10 +78,11 @@ export class FetchLoader extends React.Component<IProps, IState> {
   };
 
   state: IState = {
-    isLoading: false,
     data: undefined,
     error: undefined,
     extra: undefined,
+    isLoading: false,
+    shouldFetch: true,
   };
 
   static defaultProps: IProps = {
@@ -104,44 +106,53 @@ export class FetchLoader extends React.Component<IProps, IState> {
     this.fetcher.cancel();
   }
 
-  fetch = () => {
-    const { isLoading, data, extra } = this.state;
+  _fetch = () => {
+    const { extra } = this.state;
     const fetchFn = this.props.fetch;
-    const shouldFetch = !isLoading && typeof data === 'undefined';
-
-    if (!shouldFetch) {
-      return;
-    }
-
     this.setState(() => ({ isLoading: true }));
 
     this.fetcher = fetchFn(extra);
     this.fetcher.promise
-      .then((value: any) => {
-        const data = typeof value === 'undefined' ? null : value;
+      .then((data: any) => {
         this.setState(() => ({
+          shouldFetch: false,
           data,
           error: undefined,
-          isLoading: false,
           extra: undefined,
+          isLoading: false,
         }));
       })
       .catch((error) => {
-        if (error.isCanceled) return;
+        if (error.isCanceled) {
+          return;
+        }
+
         this.setState(() => ({
+          shouldFetch: false,
+          data: undefined,
           error,
-          data: null,
-          isLoading: false,
           extra: undefined,
+          isLoading: false,
         }));
       });
+  }
+
+  shouldFetch = () => {
+    const { isLoading, shouldFetch } = this.state;
+    return !isLoading && shouldFetch;
+  }
+
+  fetch = () => {
+    if (!this.shouldFetch()) {
+      return;
+    }
+
+    this._fetch();
   };
 
   refetch = (extra: any) => {
     this.setState(() => ({
-      data: undefined,
-      error: undefined,
-      isLoading: false,
+      shouldFetch: true,
       extra,
     }));
   };
