@@ -156,8 +156,7 @@ export class FetchLoader extends React.Component<IProps, IState> {
     } = this.props;
     const { isLoading, data, error } = this.state;
 
-    if (isLoading) {
-      if (!loader) return null;
+    if (isLoading && loader) {
       return React.createElement(loader, null, null);
     }
 
