@@ -1,5 +1,5 @@
 {
-  "name": "react-cosed",
+  "name": "react-cofx",
   "version": "1.0.9",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
@@ -9,10 +9,12 @@
     "build-demo": "yarn build && browserify demo/index.js -o demo/bundle.js -t [ babelify ]",
     "test": "tsc --noEmit && jest",
     "prepublish": "yarn build",
-    "jest": "jest"
+    "jest": "jest",
+    "precommit": "lint-staged",
+    "prettier": "prettier --write */**.{js,ts}"
   },
   "peerDependencies": {
-    "cosed": ">=1.1.5",
+    "cofx": ">=1.1.9",
     "react": ">=16.0.0"
   },
   "dependencies": {},
@@ -33,17 +35,26 @@
     "babel-runtime": "^6.26.0",
     "babelify": "^8.0.0",
     "browserify": "^16.2.2",
-    "cosed": "^1.1.5",
+    "cofx": "^1.1.9",
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
+    "husky": "^0.14.3",
     "jest": "^23.4.0",
     "jest-environment-enzyme": "^6.0.2",
     "jest-enzyme": "^6.0.2",
+    "lint-staged": "^7.2.0",
+    "prettier": "^1.14.2",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
     "react-hyperscript": "^3.2.0",
     "ts-jest": "^23.0.0",
     "typescript": "^2.9.2",
     "typings": "^2.1.1"
+  },
+  "lint-staged": {
+    "*.{js}": [
+      "prettier --write",
+      "git add"
+    ]
   }
 }

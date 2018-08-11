@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { task, TaskFn } from 'cosed';
+import { task, TaskFn } from 'cofx';
 
 type Refetch = (...args: any[]) => void;
 type FetchFn = (...args: any[]) => IterableIterator<any>;
@@ -60,7 +60,7 @@ interface IProps {
   mapRefetchToProps?: MapRefetchToProps;
   fetch: (...args: any[]) => CancellablePromise;
   component: ReactFn;
-  props: { [key: string]: any };
+  props?: { [key: string]: any };
 }
 
 interface IState {
@@ -135,12 +135,12 @@ export class FetchLoader extends React.Component<IProps, IState> {
           isLoading: false,
         }));
       });
-  }
+  };
 
   shouldFetch = () => {
     const { isLoading, shouldFetch } = this.state;
     return !isLoading && shouldFetch;
-  }
+  };
 
   fetch = () => {
     if (!this.shouldFetch()) {
