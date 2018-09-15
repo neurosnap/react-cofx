@@ -7,7 +7,7 @@
   "author": "Eric Bower",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/neurosnap/robodux.git"
+    "url": "git+https://github.com/neurosnap/react-cofx.git"
   },
   "scripts": {
     "build": "tsc",
