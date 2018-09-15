@@ -4,6 +4,11 @@
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
   "license": "MIT",
+  "author": "Eric Bower",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neurosnap/robodux.git"
+  },
   "scripts": {
     "build": "tsc",
     "build-demo": "yarn build && browserify demo/index.js -o demo/bundle.js -t [ babelify ]",
